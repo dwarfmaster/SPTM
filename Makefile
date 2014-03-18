@@ -1,5 +1,5 @@
 include param.mk
-OBJS=task.o tasksystem.o filter.o sha2.o
+OBJS=task.o tasksystem.o filter.o sha2.o filters.o
 PROG=yatm
 
 all : $(LIB)
@@ -15,7 +15,7 @@ $(LIB) : $(OBJS)
 % : %.cpp $(OBJS)
 	$(CC) $(CXXFLAGS)    -o $@.prog $^ $(LDFLAGS)
 
-clean :
+clear :
 	@touch $(LIB) $(OBJS)
 	@rm    $(LIB) $(OBJS)
 
