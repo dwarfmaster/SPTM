@@ -28,7 +28,7 @@ namespace sptm
             bool save();
 
             void clearFilters();
-            void addFilter(Filter* f);
+            void addFilter(Filter* f); /* Filters won't be free'd. */
             std::vector<Task*> applyFilters();
 
             Task* newTask(const std::string& action, const std::vector<std::string>& dst);
@@ -36,9 +36,10 @@ namespace sptm
 
         private:
             std::string m_config[(int)LAST];
-            std::vector<Filter*> m_filters;
             std::vector<Task*> m_results;
             std::vector<Task*> m_tasks;
+
+            bool saveResults(const std::string& path);
     };
 }
 
