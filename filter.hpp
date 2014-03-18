@@ -2,6 +2,8 @@
 #ifndef DEF_SPTM_FILTER
 #define DEF_SPTM_FILTER
 
+#include "task.hpp"
+
 namespace sptm
 {
     class Filter

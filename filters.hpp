@@ -10,6 +10,7 @@ namespace sptm
     {
         public:
             DoneFilter(bool done = true);
+            void set(bool done);
             virtual ~DoneFilter() = default;
             virtual bool operator()(Task* tk);
 
