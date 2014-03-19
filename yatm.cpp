@@ -70,6 +70,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    if(!ts.save()) {
+        std::cerr << "Couldn't save changes." << std::endl;
+        return 1;
+    }
+
     return 0;
 }
 
