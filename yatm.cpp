@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     if(strcmp(argv[1], "tag") == 0)
         tag(argc, argv, &ts);
     else if(strcmp(argv[1], "search") == 0)
-        tag(argc, argv, &ts);
+        search(argc, argv, &ts);
     else {
         std::cerr << "Invalid command." << std::endl;
         return 1;
