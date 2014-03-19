@@ -3,6 +3,8 @@
 #include "filters.hpp"
 #include <algorithm>
 #include <fstream>
+#include <sstream>
+#include <map>
 
 namespace sptm
 {
@@ -27,7 +29,116 @@ namespace sptm
 
     bool TaskSystem::load()
     {
-        /* TODO */
+        std::string path = m_config[(int)DONEPATH];
+        if(path.empty())
+            return false;
+        if(!loadSome(path, true))
+            return false;
+
+        path = m_config[(int)UNDONEPATH];
+        if(path.empty())
+            return false;
+        return loadSome(path, false);
+    }
+            
+    bool TaskSystem::loadSome(const std::string& path, bool done)
+    {
+        std::ifstream ifs(path);
+        if(!ifs)
+            return false;
+        std::string line;
+        Task* act = NULL;
+        std::map<std::string, Task*> ids;
+        std::map<Task*, std::vector<std::string>> children;
+        std::vector<std::string> act_children;
+
+        while(std::getline(ifs, line)) {
+            std::string word;
+            std::istringstream iss(line);
+            std::getline(iss, word, ' ');
+
+            if(word == "TASK") {
+                if(act) {
+                    m_tasks.push_back(act);
+                    children[act] = act_children;
+                }
+                act = NULL;
+                bool action = false;
+                std::vector<std::string> dsts;
+                std::string action_line;
+                std::getline(iss, word, ' ');
+                std::string id = word;
+                while(std::getline(iss, word, ' ')) {
+                    if(word == "TO")
+                        action = false;
+                    else if(word == "ACTION")
+                        action = true;
+                    else {
+                        if(action) {
+                            if(!action_line.empty())
+                                action_line += ' ';
+                            action_line += word;
+                        }
+                        else
+                            dsts.push_back(word);
+                    }
+                }
+
+                if(action_line.empty() || dsts.empty())
+                    continue;
+                act_children.clear();
+                act = new Task;
+                act->action(action_line);
+                act->dst(dsts);
+                act->id();
+                act->done(done);
+                ids[id] = act;
+            }
+
+            else if(word == "CHILDREN") {
+                std::string word;
+                while(std::getline(iss, word, ' '))
+                    act_children.push_back(word);
+            }
+
+            else if(word == "TAGS") {
+                if(!act)
+                    continue;
+                std::string word;
+                while(std::getline(iss, word, ' '))
+                    act->addTag(word);
+            }
+
+            else if(word == "FROM") {
+                if(!act)
+                    continue;
+                std::string word;
+                while(std::getline(iss, word, ' '))
+                    act->src(word);
+            }
+
+            else if(word == "EXE") {
+                if(!act)
+                    continue;
+                std::string word;
+                while(std::getline(iss, word, ' '))
+                    act->addExe(word);
+            }
+        }
+        if(act) {
+            m_tasks.push_back(act);
+            children[act] = act_children;
+        }
+
+        /* Heredity. */
+        for(Task* tk : m_tasks) {
+            for(std::string child_id : children[tk])
+                tk->addChild(ids[child_id]);
+        }
+
+        if(m_tasks.empty())
+            return false;
+        return true;
     }
 
     bool TaskSystem::save()
@@ -65,10 +176,10 @@ namespace sptm
 
         for(Task *tk : m_tasks) {
             /* First line : declaring the task. */
-            ofs << tk->stored_id() << " TO ";
+            ofs << "TASK " << tk->stored_id() << " TO ";
             for(std::string dst : tk->dst())
                 ofs << dst << " ";
-            ofs << "TASK " << tk->action() << std::endl;
+            ofs << "ACTION " << tk->action() << std::endl;
 
             /* Storing the src and exes. */
             ofs << "EXE ";

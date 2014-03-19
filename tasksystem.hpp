@@ -40,6 +40,7 @@ namespace sptm
             std::vector<Task*> m_tasks;
 
             bool saveResults(const std::string& path);
+            bool loadSome(const std::string& path, bool done);
     };
 }
 
