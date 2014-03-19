@@ -171,10 +171,10 @@ namespace sptm
             return false;
 
         /* First loop to make sure the id are up to date. */
-        for(Task *tk : m_tasks)
+        for(Task *tk : m_results)
             tk->id();
 
-        for(Task *tk : m_tasks) {
+        for(Task *tk : m_results) {
             /* First line : declaring the task. */
             ofs << "TASK " << tk->stored_id() << " TO ";
             for(std::string dst : tk->dst())
