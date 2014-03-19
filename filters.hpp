@@ -17,6 +17,18 @@ namespace sptm
         private:
             bool m_done;
     };
+
+    class TagFilter : public Filter
+    {
+        public:
+            TagFilter(std::string tag, bool has = true);
+            void set(std::string tag, bool has = true);
+            virtual ~TagFilter() = default;
+            virtual bool operator()(Task* tk);
+        private:
+            std::string m_tag;
+            bool m_has;
+    };
 }
 
 #endif
