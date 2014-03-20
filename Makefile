@@ -1,6 +1,6 @@
 include param.mk
 OBJS=task.o tasksystem.o filter.o sha2.o filters.o
-PROG=yatm
+PROG=sptm
 
 all : $(LIB)
 
