@@ -68,20 +68,11 @@ void tag(int argc, char *argv[], sptm::TaskSystem* ts)
 void search(int argc, char *argv[], sptm::TaskSystem* ts)
 {
     if(argc <= 2) {
-        std::cerr << "Missing arguments to search command." << std::endl;
+        std::cerr << "Syntax : " << argv[0] << " search tag:value tag:value ..." << std::endl;
         return;
     }
 
-    ts->clearFilters();
-    for(int i = 2; i < argc; ++i) {
-        sptm::TagFilter filter;
-        filter.set(argv[i], true);
-        if(argv[i][0] == '-')
-            filter.set(argv[i] + 1, false);
-        ts->addFilter(&filter);
-    }
-    std::vector<sptm::Task*> tasks = ts->applyFilters();
-
+    std::vector<sptm::Task*> tasks = find(argc - 2, argv + 2, ts);
     for(sptm::Task* tk : tasks)
         std::cout << "Task " << tk->stored_id() << " : \"" << tk->action() << "\"." << std::endl;
 }
@@ -93,8 +84,10 @@ std::vector<sptm::Task*> find(int argc, char *argv[], sptm::TaskSystem* ts)
         std::istringstream iss(argv[i]);
         std::string id;    std::getline(iss, id, ':');
         std::string value; std::getline(iss, value);
-        if(id.empty() || value.empty())
+        if(id.empty() || value.empty()) {
+            std::cout << "invalid description option : \"" << argv[i] << "\"." << std::endl;
             continue;
+        }
 
         sptm::Filter* filter = NULL;
         if(id == "tag") {
