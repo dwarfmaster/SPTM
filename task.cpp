@@ -146,8 +146,8 @@ namespace sptm
 
         const char* data = tohash.c_str();
         char output[SHA256_DIGEST_STRING_LENGTH];
-        char* result = SHA256_Data((const uint8_t*)data, strlen(data), output);
-        m_id = result;
+        SHA256_Data((const uint8_t*)data, strlen(data), output);
+        m_id = output;
     }
 
     std::string Task::stored_id() const
