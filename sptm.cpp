@@ -50,25 +50,39 @@ int main(int argc, char *argv[])
 
 void tag(int argc, char *argv[], sptm::TaskSystem* ts)
 {
-    if(argc != 4) {
-        std::cerr << "Invalid use of tag command." << std::endl;
+    if(argc <= 3) {
+        std::cerr << "Syntax : " << argv[0] << " +tag1 -tag2 -- key:value ... " << std::endl;
         return;
     }
 
-    ts->clearFilters();
-    sptm::TagFilter filter;
-    filter.set(argv[3], true);
-    ts->addFilter(&filter);
-    std::vector<sptm::Task*> tasks = ts->applyFilters();
+    /* Parsing tags. */
+    std::vector<std::pair<std::string,bool>> tags;
+    int i;
+    for(i = 2; i < argc && strcmp(argv[i],"--") != 0; ++i) {
+        std::string value(argv[i]);
+        bool pos = positive(value);
+        tags.push_back(std::pair<std::string,bool>(value,pos));
+    }
 
-    for(sptm::Task* tk : tasks)
-        tk->addTag(argv[2]);
+    /* Getting tasks to apply. */
+    ++i;
+    std::vector<sptm::Task*> tasks = find(argc - i, argv + i, ts);
+
+    /* Applying tags. */
+    for(auto p : tags) {
+        for(sptm::Task* tk : tasks) {
+            if(p.second)
+                tk->addTag(p.first);
+            else
+                tk->rmTag(p.first);
+        }
+    }
 }
 
 void search(int argc, char *argv[], sptm::TaskSystem* ts)
 {
     if(argc <= 2) {
-        std::cerr << "Syntax : " << argv[0] << " search tag:value tag:value ..." << std::endl;
+        std::cerr << "Syntax : " << argv[0] << " search key:value key:value ..." << std::endl;
         return;
     }
 
