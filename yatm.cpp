@@ -12,7 +12,8 @@ void tag(int argc, char *argv[], sptm::TaskSystem* ts)
     }
 
     ts->clearFilters();
-    sptm::TagFilter filter(argv[3], true);
+    sptm::TagFilter filter;
+    filter.set(argv[3], true);
     ts->addFilter(&filter);
     std::vector<sptm::Task*> tasks = ts->applyFilters();
 
@@ -29,7 +30,8 @@ void search(int argc, char *argv[], sptm::TaskSystem* ts)
 
     ts->clearFilters();
     for(int i = 2; i < argc; ++i) {
-        sptm::TagFilter filter(argv[i], true);
+        sptm::TagFilter filter;
+        filter.set(argv[i], true);
         if(argv[i][0] == '-')
             filter.set(argv[i] + 1, false);
         ts->addFilter(&filter);
