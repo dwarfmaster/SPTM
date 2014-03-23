@@ -6,13 +6,18 @@ all : $(LIB)
 
 prog : $(OBJS) $(PROG)
 
+static : $(STATIC)
+
+$(STATIC) : $(OBJS)
+	ar rcs $@ $^
+
 $(LIB) : $(OBJS)
 	$(CC) $(CXXFLAGS)    -o $@ $^ $(LDFLAGS) $(LIBFLAGS)
 
 %.o : %.cpp
 	$(CC) $(CXXFLAGS) -c -o $@ $<
 
-% : %.cpp $(OBJS)
+% : %.cpp $(STATIC)
 	$(CC) $(CXXFLAGS)    -o $@.prog $^ $(LDFLAGS)
 
 clear :
